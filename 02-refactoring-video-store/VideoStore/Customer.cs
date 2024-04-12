@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace VideoStore;
 
@@ -41,27 +42,9 @@ public class Customer
         return result;
     }
 
-    private int TotalFrequentRenterPoints()
-    {
-        var frequentRenterPoints = 0;
-        foreach (var each in _rentals)
-        {
-            frequentRenterPoints += FrequentRenterPointsFor(each);
-        }
+    private int TotalFrequentRenterPoints() => _rentals.Sum(FrequentRenterPointsFor);
 
-        return frequentRenterPoints;
-    }
-
-    private double TotalAmount()
-    {
-        double totalAmount = 0;
-        foreach (var each in _rentals)
-        {
-            totalAmount += AmountFor(each);
-        }
-
-        return totalAmount;
-    }
+    private double TotalAmount() => _rentals.Sum(AmountFor);
 
     private static int FrequentRenterPointsFor(Rental each)
     {
