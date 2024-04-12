@@ -33,7 +33,7 @@ public class Customer
         foreach (var each in _rentals)
         {
             result += "\t" + each.GetMovie().GetTitle() + "\t"
-                      + string.Format(new System.Globalization.CultureInfo("en-US"), "{0:0.0}", AmountFor(each)) + "\n";
+                      + string.Format(new System.Globalization.CultureInfo("en-US"), "{0:0.0}", each.AmountFor()) + "\n";
         }
 
         result += "You owed " + string.Format(new System.Globalization.CultureInfo("en-US"), "{0:0.0}", TotalAmount()) + "\n";
@@ -42,40 +42,7 @@ public class Customer
         return result;
     }
 
-    private int TotalFrequentRenterPoints() => _rentals.Sum(FrequentRenterPointsFor);
+    private int TotalFrequentRenterPoints() => _rentals.Sum(each => each.FrequentRenterPointsFor());
 
-    private double TotalAmount() => _rentals.Sum(AmountFor);
-
-    private static int FrequentRenterPointsFor(Rental each)
-    {
-        var frequentRenterPoints = 1;
-        if (each.GetMovie().GetPriceCode() == Movie.NewRelease
-            && each.GetDaysRented() > 1)
-        {
-            frequentRenterPoints++;
-        }
-        return frequentRenterPoints;
-    }
-
-    private static double AmountFor(Rental each)
-    {
-        double result = 0;
-        switch (each.GetMovie().GetPriceCode())
-        {
-            case Movie.Regular:
-                result += 2;
-                if (each.GetDaysRented() > 2)
-                    result += (each.GetDaysRented() - 2) * 1.5;
-                break;
-            case Movie.NewRelease:
-                result += each.GetDaysRented() * 3;
-                break;
-            case Movie.Children:
-                result += 1.5;
-                if (each.GetDaysRented() > 3)
-                    result += (each.GetDaysRented() - 3) * 1.5;
-                break;
-        }
-        return result;
-    }
+    private double TotalAmount() => _rentals.Sum(each => each.AmountFor());
 }
