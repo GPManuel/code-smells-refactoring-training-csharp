@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace VideoStore;
 
 public class Customer
 {
+    private readonly List<Rental> _rentals = new();
+    private readonly string _name;
+
+
     public Customer(string name)
     {
         _name = name;
@@ -24,37 +29,13 @@ public class Customer
     {
         double totalAmount = 0;
         var frequentRenterPoints = 0;
-        var rentals = _rentals.GetEnumerator();
         var result = "Rental Record for " + GetName() + "\n";
 
-        while (rentals.MoveNext())
+        foreach (var each in _rentals)
         {
-            double thisAmount = 0;
-            var each = (Rental)rentals.Current;
+            var thisAmount = AmountFor(each);
 
-            // determines the amount for each line
-            switch (each.GetMovie().GetPriceCode())
-            {
-                case Movie.Regular:
-                    thisAmount += 2;
-                    if (each.GetDaysRented() > 2)
-                        thisAmount += (each.GetDaysRented() - 2) * 1.5;
-                    break;
-                case Movie.NewRelease:
-                    thisAmount += each.GetDaysRented() * 3;
-                    break;
-                case Movie.Children:
-                    thisAmount += 1.5;
-                    if (each.GetDaysRented() > 3)
-                        thisAmount += (each.GetDaysRented() - 3) * 1.5;
-                    break;
-            }
-
-            frequentRenterPoints++;
-
-            if (each.GetMovie().GetPriceCode() == Movie.NewRelease
-                && each.GetDaysRented() > 1)
-                frequentRenterPoints++;
+            frequentRenterPoints += FrequentRenterPointsFor(each);
 
             result += "\t" + each.GetMovie().GetTitle() + "\t"
                       + string.Format(new System.Globalization.CultureInfo("en-US"), "{0:0.0}", thisAmount) + "\n";
@@ -67,7 +48,39 @@ public class Customer
         return result;
     }
 
+    private static int FrequentRenterPointsFor(Rental each)
+    {
+        var frequentRenterPoints = 1;
+        if (each.GetMovie().GetPriceCode() == Movie.NewRelease
+            && each.GetDaysRented() > 1)
+        {
+            frequentRenterPoints++;
+        }
+        return frequentRenterPoints;
+    }
 
-    private readonly string _name;
-    private readonly ArrayList _rentals = new();
+    private static double AmountFor(Rental each)
+    {
+        double thisAmount = 0;
+
+        // determines the amount for each line
+        switch (each.GetMovie().GetPriceCode())
+        {
+            case Movie.Regular:
+                thisAmount += 2;
+                if (each.GetDaysRented() > 2)
+                    thisAmount += (each.GetDaysRented() - 2) * 1.5;
+                break;
+            case Movie.NewRelease:
+                thisAmount += each.GetDaysRented() * 3;
+                break;
+            case Movie.Children:
+                thisAmount += 1.5;
+                if (each.GetDaysRented() > 3)
+                    thisAmount += (each.GetDaysRented() - 3) * 1.5;
+                break;
+        }
+
+        return thisAmount;
+    }
 }
