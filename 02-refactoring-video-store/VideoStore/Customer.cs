@@ -57,11 +57,11 @@ public class Customer
                 frequentRenterPoints++;
 
             result += "\t" + each.GetMovie().GetTitle() + "\t"
-                      + String.Format("{0:0.0}", thisAmount) + "\n";
+                      + string.Format(new System.Globalization.CultureInfo("en-US"), "{0:0.0}", thisAmount) + "\n";
             totalAmount += thisAmount;
         }
 
-        result += "You owed " + String.Format("{0:0.0}", totalAmount) + "\n";
+        result += "You owed " + string.Format(new System.Globalization.CultureInfo("en-US"), "{0:0.0}", totalAmount) + "\n";
         result += "You earned " + frequentRenterPoints.ToString() + " frequent renter points\n";
 
         return result;
